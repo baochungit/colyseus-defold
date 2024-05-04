@@ -145,16 +145,17 @@ function HTTP:request(method, segments, options, callback)
     local has_error = (response.status >= 400)
     local err = nil
 
-    -- parse JSON response
-    if response.headers['content-type'] and string.find(response.headers['content-type'], 'application/json') then
-      data = json.decode(data)
-    end
-
-    if not data and response.status == 0 then
+    if response.status == 0 then
       return callback("offline")
     end
 
-    if has_error or data.error then
+    -- parse JSON response
+    if data and response.headers['content-type'] and string.find(response.headers['content-type'], 'application/json') then
+      data = json.decode(data)
+      if data.error then has_error = true end
+    end
+
+    if has_error then
       err = {
         status = response.status,
         message = (data and data.error) or response.error or response.response
