@@ -138,7 +138,10 @@ function HTTP:request(method, segments, options, callback)
 		headers['Authorization'] = "Bearer " .. self.auth_token
 	end
 
-  local body = options.body and JSON.encode(options.body) or ""
+  local body = options.body or ""
+  if headers['Content-Type'] == 'application/json' then
+    body = JSON.encode(body)
+  end
 
   http.request(self:_get_http_endpoint(segments), method, function(self, id, response)
     local data = response.response ~= '' and response.response
