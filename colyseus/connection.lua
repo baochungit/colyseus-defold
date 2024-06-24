@@ -35,7 +35,7 @@ function Connection:open(endpoint)
   self.endpoint = endpoint
 
   local this = self
-  local params = {}
+  local params = { timeout = Connection.config.connect_timeout * 1000 }
 
   self.ws = websocket.connect(endpoint, params, function(self, conn, data)
     if data.event == websocket.EVENT_DISCONNECTED then
